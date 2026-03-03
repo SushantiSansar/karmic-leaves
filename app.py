@@ -6,8 +6,32 @@ app = Flask(__name__)
 # Ethical response engine
 def generate_response(dilemma, perspective):
 
+    # --- Emotional Detection ---
+    emotional_prefix = ""
+    lower_dilemma = dilemma.lower()
+
+    if any(word in lower_dilemma for word in ["scared", "afraid", "fear"]):
+        emotional_prefix = (
+            "It sounds like this situation is causing you fear or anxiety. "
+            "That emotional weight matters deeply.\n\n"
+        )
+
+    elif any(word in lower_dilemma for word in ["confused", "lost", "unsure"]):
+        emotional_prefix = (
+            "It seems you're feeling uncertain, which is completely natural "
+            "in complex moral situations.\n\n"
+        )
+
+    elif any(word in lower_dilemma for word in ["angry", "frustrated"]):
+        emotional_prefix = (
+            "There appears to be frustration or anger in this dilemma. "
+            "Strong emotions often signal deeply held values.\n\n"
+        )
+
+    # --- Perspective Logic ---
+
     if perspective == "utilitarian":
-        return f"""
+        return emotional_prefix + f"""
 From a utilitarian perspective, the central question is:
 What action produces the greatest overall good?
 
@@ -23,7 +47,7 @@ The moral weight lies in consequences.
 """
 
     elif perspective == "deontological":
-        return f"""
+        return emotional_prefix + f"""
 From a deontological perspective, morality is grounded in duty,
 not outcomes.
 
@@ -38,7 +62,7 @@ Integrity is not negotiable in this framework.
 """
 
     elif perspective == "virtue":
-        return f"""
+        return emotional_prefix + f"""
 From a virtue ethics perspective, this dilemma asks:
 What kind of person do you want to become?
 
@@ -55,9 +79,11 @@ your highest moral self.
     else:
         return "Select a philosophical lens to begin."
 
+
 @app.route("/")
 def home():
     return render_template("index.html")
+
 
 @app.route("/chat", methods=["POST"])
 def chat():
@@ -68,6 +94,7 @@ def chat():
     response = generate_response(dilemma, perspective)
 
     return jsonify({"reply": response})
+
 
 # IMPORTANT: This makes it work on Render
 if __name__ == "__main__":
