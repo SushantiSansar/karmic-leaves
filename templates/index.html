@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Karmic Leaves</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <div class="logo">🌿</div>
+        <h1>Karmic Leaves</h1>
+        <p>Your Philosophical AI Companion</p>
+    </div>
+
+    <div class="controls">
+        <select id="perspective">
+            <option value="utilitarian">Utilitarian</option>
+            <option value="deontological">Deontological</option>
+            <option value="virtue">Virtue Ethics</option>
+        </select>
+    </div>
+
+    <div id="chatbox" class="chatbox"></div>
+
+    <div class="input-area">
+        <input type="text" id="userInput" placeholder="Share your moral dilemma...">
+        <button onclick="sendMessage()">Reflect</button>
+    </div>
+
+</div>
+
+<script>
+function sendMessage() {
+
+    let input = document.getElementById("userInput");
+    let message = input.value;
+    let perspective = document.getElementById("perspective").value;
+
+    if (message.trim() === "") return;
+
+    addMessage("user", message);
+    input.value = "";
+
+    fetch("/chat", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            message: message,
+            perspective: perspective
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        setTimeout(() => {
+            addMessage("bot", data.reply);
+        }, 800);
+    });
+}
+
+function addMessage(sender, text) {
+
+    let chatbox = document.getElementById("chatbox");
+    let msgDiv = document.createElement("div");
+
+    msgDiv.classList.add("message");
+    msgDiv.classList.add(sender);
+
+    msgDiv.innerText = text;
+
+    chatbox.appendChild(msgDiv);
+    chatbox.scrollTop = chatbox.scrollHeight;
+}
+</script>
+
+</body>
+</html>
