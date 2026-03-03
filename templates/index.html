@@ -25,13 +25,19 @@
     <div id="chatbox" class="chatbox"></div>
 
     <div class="input-area">
-        <input type="text" id="userInput" placeholder="Share your moral dilemma...">
+        <input type="text" id="userInput" placeholder="Share your moral dilemma..." onkeypress="handleKey(event)">
         <button onclick="sendMessage()">Reflect</button>
     </div>
 
 </div>
 
 <script>
+function handleKey(event) {
+    if (event.key === "Enter") {
+        sendMessage();
+    }
+}
+
 function sendMessage() {
 
     let input = document.getElementById("userInput");
@@ -53,9 +59,27 @@ function sendMessage() {
     })
     .then(response => response.json())
     .then(data => {
+
+        let chatbox = document.getElementById("chatbox");
+
+        // Create typing indicator
+        let typingDiv = document.createElement("div");
+        typingDiv.classList.add("message", "bot");
+        typingDiv.id = "typing";
+        typingDiv.innerText = "🌿 Philosopher is reflecting...";
+        chatbox.appendChild(typingDiv);
+        chatbox.scrollTop = chatbox.scrollHeight;
+
         setTimeout(() => {
+
+            // Remove typing indicator
+            typingDiv.remove();
+
+            // Show actual response
             addMessage("bot", data.reply);
-        }, 800);
+
+        }, 1500);
+
     });
 }
 
