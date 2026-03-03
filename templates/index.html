@@ -1,36 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Karmic Leaves</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-
-<div class="container">
-
-    <div class="header">
-        <div class="logo">🌿</div>
-        <h1>Karmic Leaves</h1>
-        <p>Your Philosophical AI Companion</p>
-    </div>
-
-    <div class="controls">
-        <select id="perspective">
-            <option value="utilitarian">Utilitarian</option>
-            <option value="deontological">Deontological</option>
-            <option value="virtue">Virtue Ethics</option>
-        </select>
-    </div>
-
-    <div id="chatbox" class="chatbox"></div>
-
-    <div class="input-area">
-        <input type="text" id="userInput" placeholder="Share your moral dilemma..." onkeypress="handleKey(event)">
-        <button onclick="sendMessage()">Reflect</button>
-    </div>
-
-</div>
-
 <script>
 function handleKey(event) {
     if (event.key === "Enter") {
@@ -72,15 +39,36 @@ function sendMessage() {
 
         setTimeout(() => {
 
-            // Remove typing indicator
             typingDiv.remove();
 
-            // Show actual response
-            addMessage("bot", data.reply);
+            typeMessage(data.reply);
 
-        }, 1500);
-
+        }, 1000);
     });
+}
+
+function typeMessage(text) {
+
+    let chatbox = document.getElementById("chatbox");
+
+    let msgDiv = document.createElement("div");
+    msgDiv.classList.add("message", "bot");
+    chatbox.appendChild(msgDiv);
+
+    let i = 0;
+    let speed = 20; // lower = faster typing
+
+    function typing() {
+        if (i < text.length) {
+            msgDiv.innerText += text.charAt(i);
+            i++;
+            setTimeout(typing, speed);
+        } else {
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+    }
+
+    typing();
 }
 
 function addMessage(sender, text) {
@@ -97,6 +85,3 @@ function addMessage(sender, text) {
     chatbox.scrollTop = chatbox.scrollHeight;
 }
 </script>
-
-</body>
-</html>
