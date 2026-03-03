@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify
-import random
+import os
 
 app = Flask(__name__)
 
@@ -61,12 +61,15 @@ def home():
 
 @app.route("/chat", methods=["POST"])
 def chat():
-    dilemma = request.json.get("message")
-    perspective = request.json.get("perspective")
+    data = request.get_json()
+    dilemma = data.get("message")
+    perspective = data.get("perspective")
 
     response = generate_response(dilemma, perspective)
 
     return jsonify({"reply": response})
 
+# IMPORTANT: This makes it work on Render
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
